@@ -44,9 +44,7 @@ def limpiar_direccion(d: str) -> str:
     return re.sub(r"\s+", " ", d).strip()
 
 
-# --------------------------------------------------------------------------- #
 # Caché
-# --------------------------------------------------------------------------- #
 def _load_cache(path: Path) -> dict[str, tuple]:
     if path.exists():
         c = pd.read_csv(path)
@@ -63,9 +61,7 @@ def _save_cache(cache: dict[str, tuple], path: Path) -> None:
     ).to_csv(path, index=False, encoding="utf-8")
 
 
-# --------------------------------------------------------------------------- #
 # Resolución de una dirección según proveedor
-# --------------------------------------------------------------------------- #
 def _resolver_google(geocode, direccion: str, sufijo: str) -> tuple:
     """Google maneja bien la dirección completa; la precisión sale de location_type."""
     loc = geocode(f"{direccion}{sufijo}", region="pe")
@@ -97,10 +93,7 @@ def _build_geocoder(provider: str, api_key: str | None, min_delay: float):
         key = api_key or os.environ.get("GOOGLE_MAPS_API_KEY")
         if not key:
             raise ValueError(
-                "Falta la API key de Google. Crea una en "
-                "https://console.cloud.google.com (habilita 'Geocoding API' y facturación) "
-                "y pásala como api_key=... o expórtala en la variable de entorno "
-                "GOOGLE_MAPS_API_KEY. Alternativa sin key: provider='nominatim'."
+                "Falta la API key de Google"
             )
         geolocator = GoogleV3(api_key=key, timeout=10)
         delay = min_delay if min_delay is not None else 0.05  # Google admite alta QPS
@@ -115,9 +108,7 @@ def _build_geocoder(provider: str, api_key: str | None, min_delay: float):
     raise ValueError(f"provider desconocido: {provider!r} (usa 'google' o 'nominatim')")
 
 
-# --------------------------------------------------------------------------- #
 # API principal
-# --------------------------------------------------------------------------- #
 def geocode_addresses(
     direcciones: pd.Series | list[str],
     cache_path: Path,
@@ -157,9 +148,11 @@ def geocode_addresses(
     if pendientes:
         for i, d in enumerate(pendientes, 1):
             cache[d] = resolver(geocode, d, sufijo)
-            if verbose and (i % 50 == 0 or i == len(pendientes)):
-                print(f"  {i}/{len(pendientes)} consultadas")
-        _save_cache(cache, cache_path)
+            if i % 50 == 0 or i == len(pendientes):
+                # Checkpoint en disco: si el proceso se corta, no se pierde lo ya consultado.
+                _save_cache(cache, cache_path)
+                if verbose:
+                    print(f"  {i}/{len(pendientes)} consultadas (caché guardada)", flush=True)
 
     return cache
 
@@ -169,8 +162,17 @@ def attach_coords(
 ) -> pd.DataFrame:
     """Agrega LATITUD, LONGITUD, PRECISION_COORD y COORD_VALIDA al DataFrame."""
     df = df.copy()
-    df["LATITUD"] = df[col_dir].map(lambda d: cache.get(d, (None, None, None))[0])
-    df["LONGITUD"] = df[col_dir].map(lambda d: cache.get(d, (None, None, None))[1])
-    df["PRECISION_COORD"] = df[col_dir].map(lambda d: cache.get(d, (None, None, None))[2])
+
+    def _lookup(d):
+        # La caché se llena con la dirección recortada (str.strip en geocode_addresses);
+        # aquí la dirección original puede traer espacios extra -> normalizar antes de buscar.
+        if pd.isna(d):
+            return (None, None, None)
+        return cache.get(str(d).strip(), (None, None, None))
+
+    coords = df[col_dir].map(_lookup)
+    df["LATITUD"] = coords.map(lambda t: t[0])
+    df["LONGITUD"] = coords.map(lambda t: t[1])
+    df["PRECISION_COORD"] = coords.map(lambda t: t[2])
     df["COORD_VALIDA"] = [en_bbox(la, lo) for la, lo in zip(df["LATITUD"], df["LONGITUD"])]
     return df
