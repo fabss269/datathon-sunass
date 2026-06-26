@@ -1,5 +1,10 @@
 .venv/
 
+# Secretos — API keys (Google Maps, etc.). NUNCA versionar.
+.env
+.env.*
+!.env.example
+
 # Office lock files (cuando se abre un .xlsx)
 ~$*
 
