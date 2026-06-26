@@ -1,1 +1,16 @@
 .venv/
+
+# Office lock files (cuando se abre un .xlsx)
+~$*
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# Datos intermedios/procesados (regenerables) — los crudos en data/raw/ SÍ se versionan
+data/interim/*
+data/processed/*
+!data/interim/.gitkeep
+!data/processed/.gitkeep
