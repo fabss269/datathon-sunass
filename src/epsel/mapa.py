@@ -53,9 +53,7 @@ PULSE_CSS = """
 </style>"""
 
 
-# --------------------------------------------------------------------------- #
 # Helpers de estilo / contenido
-# --------------------------------------------------------------------------- #
 def color(n: int) -> str:
     if n >= UMBRAL_PULSO:
         return ROJO
@@ -162,9 +160,7 @@ def _leyenda(m) -> None:
     m.get_root().html.add_child(folium.Element(html))
 
 
-# --------------------------------------------------------------------------- #
 # Construcción del mapa
-# --------------------------------------------------------------------------- #
 def build_map(gdf: pd.DataFrame, *, con_secundaria: bool = True) -> folium.Map:
     """Arma el mapa Folium completo a partir de las incidencias con catastro.
 

@@ -5,9 +5,7 @@ los nombres técnicos (a menudo abreviados de ArcGIS) a su significado de negoci
 Donde el significado no es seguro se marca con "(?)".
 """
 
-# --------------------------------------------------------------------------- #
 # DANA — tickets de reclamos operacionales
-# --------------------------------------------------------------------------- #
 TICKETS = {
     "TICKET": "Identificador único del ticket/orden de trabajo en DANA.",
     "ALCANCE": "Alcance del reclamo: 'general' (afecta a varios) o 'particular' (un predio).",
@@ -35,10 +33,8 @@ TICKETS = {
     "DURACION_DIAS": "Derivada: días entre registro y cierre. Es cierre administrativo, no tiempo de atención en campo.",
 }
 
-# --------------------------------------------------------------------------- #
 # Catastro — esquema ESRI compartido por redes de alcantarillado (primarias/secundarias)
 # y, en parte, por buzones. Muchos campos vienen vacíos o como placeholder.
-# --------------------------------------------------------------------------- #
 REDES = {
     "facilityid": "Identificador del activo (tramo de tubería). Puede repetirse cuando un tramo se parte en varios segmentos.",
     "mainshape": "Forma de la sección. Constante 'Desconocido'.",
@@ -93,9 +89,7 @@ REDES = {
     "last_edi_1": "Fecha de última edición del registro en el GIS.",
 }
 
-# --------------------------------------------------------------------------- #
 # Catastro — buzones (nodos de alcantarillado)
-# --------------------------------------------------------------------------- #
 BUZONES = {
     "facilityid": "Identificador del buzón. Con duplicados (20.147 únicos de 21.354).",
     "mhtype": "Tipo de buzón (Estándar, Arranque, Otro, Desconocido).",
@@ -145,9 +139,7 @@ BUZONES = {
     "last_edi_1": "Fecha de última edición del registro en el GIS.",
 }
 
-# --------------------------------------------------------------------------- #
 # Catastro — manzanas (polígonos de manzana, Sector 09)
-# --------------------------------------------------------------------------- #
 MANZANAS = {
     "sector": "Sector catastral. Constante '09' (solo se entregó este sector).",
     "provincia": "Código de provincia. Constante '01' (Chiclayo).",
@@ -162,9 +154,7 @@ MANZANAS = {
     "last_edi_1": "Fecha de última edición del registro en el GIS.",
 }
 
-# --------------------------------------------------------------------------- #
 # Catastro — RED_AGUA (solo .dbf, sin geometría; export de ArcGIS Utility Network)
-# --------------------------------------------------------------------------- #
 RED_AGUA = {
     "id": "Identificador secuencial de fila.",
     "ASSETGROUP": "Grupo de activo (Utility Network). Código numérico.",

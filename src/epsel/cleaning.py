@@ -19,9 +19,7 @@ COLUMNAS_PII = ["PERSONA", "DNI", "CELULAR", "TELEFONO FIJO",
                 "CORREO ELECTRÓNICO", "PARENTESCO"]
 
 
-# --------------------------------------------------------------------------- #
 # Normalización de texto
-# --------------------------------------------------------------------------- #
 def _strip_accents(s: str) -> str:
     return "".join(c for c in unicodedata.normalize("NFKD", s) if not unicodedata.combining(c))
 
@@ -35,9 +33,7 @@ def _norm(s) -> str | None:
     return s or None
 
 
-# --------------------------------------------------------------------------- #
 # 1. Selección de columnas
-# --------------------------------------------------------------------------- #
 def drop_constant_columns(df: pd.DataFrame) -> pd.DataFrame:
     """Elimina las columnas constantes (sin variabilidad)."""
     presentes = [c for c in COLUMNAS_CONSTANTES if c in df.columns]
@@ -64,9 +60,7 @@ def _hash_dni(dni) -> str | None:
     return hashlib.sha1(str(int(dni)).encode()).hexdigest()[:12]
 
 
-# --------------------------------------------------------------------------- #
 # 2. Normalización de categóricas
-# --------------------------------------------------------------------------- #
 def normalize_categories(df: pd.DataFrame) -> pd.DataFrame:
     """Normaliza las columnas categóricas de texto (mayúsculas, sin acentos)."""
     df = df.copy()
@@ -126,9 +120,7 @@ def normalize_solucion(df: pd.DataFrame, col: str = "DETALLE DE SOLUCIÓN") -> p
     return df
 
 
-# --------------------------------------------------------------------------- #
 # 3. Deduplicación de eventos (varias órdenes = un mismo evento)
-# --------------------------------------------------------------------------- #
 def assign_event_ids(df: pd.DataFrame, window_days: int = 7) -> pd.DataFrame:
     """Asigna `EVENTO_ID`: agrupa tickets del mismo suministro y servicio
     registrados dentro de una ventana temporal (`window_days`).
